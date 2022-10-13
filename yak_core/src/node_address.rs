@@ -10,7 +10,7 @@ pub enum AddressError {
 /// * contain at least one character
 /// * contain no control or whitespace characters
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Address {
+pub struct NodeAddress {
     val: String,
 }
 
@@ -22,11 +22,11 @@ pub struct Address {
 /// * `let addr = Address::try_from("p_123")?;`
 /// * `let addr: Address = "p_123".try_into()?;`
 ///
-impl TryFrom<&str> for Address {
+impl TryFrom<&str> for NodeAddress {
     type Error = AddressError;
     fn try_from(s: &str) -> Result<Self, AddressError> {
         if !s.is_empty() && s.chars().all(|c| !c.is_control() && !c.is_whitespace()) {
-            return Ok(Address {
+            return Ok(NodeAddress {
                 val: String::from(s),
             });
         }
@@ -34,14 +34,12 @@ impl TryFrom<&str> for Address {
     }
 }
 
-/// Display an `Address`.
-///
 /// Implementing `Display` auto implements `ToString`.
 ///
 /// Provides...
 /// * `println!("{}", addr)`
 /// * `addr.to_string()`
-impl std::fmt::Display for Address {
+impl std::fmt::Display for NodeAddress {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         f.write_str(&self.val)
     }
@@ -63,8 +61,8 @@ mod tests {
             "Happy😀Node",
         ];
         for v in vals {
-            assert!(Address::try_from(v).is_ok());
-            assert!(<&str as TryInto<Address>>::try_into(v).is_ok());
+            assert!(NodeAddress::try_from(v).is_ok());
+            assert!(<&str as TryInto<NodeAddress>>::try_into(v).is_ok());
         }
     }
 
@@ -72,9 +70,9 @@ mod tests {
     fn create_err() {
         let vals = vec!["node _123", " node_123", "node_123 ", "node\t", "node\n"];
         for v in vals {
-            assert_eq!(Address::try_from(v), Err(AddressError::Invalid));
+            assert_eq!(NodeAddress::try_from(v), Err(AddressError::Invalid));
             assert_eq!(
-                <&str as TryInto<Address>>::try_into(v),
+                <&str as TryInto<NodeAddress>>::try_into(v),
                 Err(AddressError::Invalid)
             );
         }

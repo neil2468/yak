@@ -1,8 +1,9 @@
 use anyhow::Result;
-use yak_core::Address;
+use yak_core::NodeAddress;
 
+#[test]
 fn main() -> Result<()> {
-    let addr = Address::try_from("node#1")?;
+    let addr = NodeAddress::try_from("node# 1")?;
     println!("addr = {}", addr);
     Ok(())
 }

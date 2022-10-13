@@ -1,5 +1,5 @@
 // TODO #![warn(missing_docs)]
 
-mod address;
+mod node_address;
 
-pub use address::*;
+pub use node_address::*;

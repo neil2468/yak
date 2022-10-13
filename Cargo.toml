@@ -1,5 +1,5 @@
 [workspace]
 members = [
     "yak_core",
-    "yak_examples/*",
+    "yak_tests",
 ]

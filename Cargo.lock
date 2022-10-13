@@ -9,14 +9,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "98161a4e3e2184da77bb14f02184cdd111e83bbbcc9979dfee3c44b9a85f5602"
 
 [[package]]
-name = "basic"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "yak_core",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -76,4 +68,12 @@ name = "yak_core"
 version = "0.1.0"
 dependencies = [
  "thiserror",
+]
+
+[[package]]
+name = "yak_tests"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "yak_core",
 ]

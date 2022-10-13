@@ -1,8 +1,8 @@
 [package]
-name = "basic"
+name = "yak_tests"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
-yak_core = { path = "../../yak_core" }
+yak_core = { path = "../yak_core" }
