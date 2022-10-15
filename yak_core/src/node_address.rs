@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug, Eq, PartialEq)]
-pub enum AddressError {
+pub enum NodeAddressError {
     #[error("invalid value for an address")]
     Invalid,
 }
@@ -9,7 +9,7 @@ pub enum AddressError {
 /// Valid addresses are unicode strings that...
 /// * contain at least one character
 /// * contain no control or whitespace characters
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct NodeAddress {
     val: String,
 }
@@ -19,18 +19,20 @@ pub struct NodeAddress {
 /// Implementing `TryFrom` auto implements `TryInto`.
 ///
 /// # Provides
-/// * `let addr = Address::try_from("p_123")?;`
-/// * `let addr: Address = "p_123".try_into()?;`
-///
+/// ```
+/// use yak_core::NodeAddress;
+/// let addr = NodeAddress::try_from("p_123").unwrap();
+/// let addr: NodeAddress = "p_123".try_into().unwrap();
+/// ```
 impl TryFrom<&str> for NodeAddress {
-    type Error = AddressError;
-    fn try_from(s: &str) -> Result<Self, AddressError> {
+    type Error = NodeAddressError;
+    fn try_from(s: &str) -> Result<Self, Self::Error> {
         if !s.is_empty() && s.chars().all(|c| !c.is_control() && !c.is_whitespace()) {
             return Ok(NodeAddress {
                 val: String::from(s),
             });
         }
-        Err(AddressError::Invalid)
+        Err(NodeAddressError::Invalid)
     }
 }
 
@@ -70,10 +72,10 @@ mod tests {
     fn create_err() {
         let vals = vec!["node _123", " node_123", "node_123 ", "node\t", "node\n"];
         for v in vals {
-            assert_eq!(NodeAddress::try_from(v), Err(AddressError::Invalid));
+            assert_eq!(NodeAddress::try_from(v), Err(NodeAddressError::Invalid));
             assert_eq!(
                 <&str as TryInto<NodeAddress>>::try_into(v),
-                Err(AddressError::Invalid)
+                Err(NodeAddressError::Invalid)
             );
         }
     }
