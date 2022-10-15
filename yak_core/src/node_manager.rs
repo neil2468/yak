@@ -3,7 +3,6 @@ use std::{collections::BTreeMap, sync::Arc};
 use thiserror::Error;
 use tokio::{
     runtime::{Builder, Runtime},
-    sync::RwLock,
     task::JoinSet,
 };
 
@@ -15,7 +14,7 @@ pub enum NodeManagerError {
 
 /// Manages all the nodes running in a single async runtime.
 pub struct NodeManager {
-    nodes: BTreeMap<NodeAddress, Arc<RwLock<dyn Node>>>,
+    nodes: BTreeMap<NodeAddress, Arc<dyn Node>>,
     runtime: Runtime,
     join_set: JoinSet<()>,
 }
@@ -31,15 +30,13 @@ impl NodeManager {
         }
     }
 
-    pub async fn start_node(&mut self, node: impl Node) -> Result<(), NodeManagerError> {
+    pub fn start_node(&mut self, node: impl Node) -> Result<(), NodeManagerError> {
         let addr = node.address().clone();
         if self.nodes.contains_key(&addr) {
             return Err(NodeManagerError::AddressInUse);
         }
 
-        let arc = Arc::new(RwLock::new(node));
-        arc.clone().write().await
-
+        let arc = Arc::new(node);
         let arc_clone = arc.clone();
 
         self.join_set.spawn_on(

@@ -1,11 +1,9 @@
 use anyhow::Result;
-use async_trait::async_trait;
 use tokio::time::{sleep, Duration};
-use yak_core::{Node, NodeAddress, NodeAddressError, NodeManager};
+use yak_core::{async_trait::async_trait, Node, NodeAddress, NodeAddressError, NodeManager};
 
 struct MyNode {
     addr: NodeAddress,
-    loop_count: u32,
 }
 
 impl MyNode {
@@ -13,10 +11,7 @@ impl MyNode {
         addr: T,
     ) -> Result<Self, NodeAddressError> {
         let tmp: NodeAddress = addr.try_into()?;
-        Ok(Self {
-            addr: tmp,
-            loop_count: 0,
-        })
+        Ok(Self { addr: tmp })
     }
 }
 
@@ -26,9 +21,8 @@ impl Node for MyNode {
         &self.addr
     }
 
-    async fn main_loop(&mut self) {
+    async fn main_loop(&self) {
         for i in 0..10 {
-            self.loop_count += 1;
             println!("{}, addr = {}", i, self.addr);
             sleep(Duration::from_millis(250)).await;
         }
@@ -41,10 +35,10 @@ fn basic() -> Result<()> {
 
     let node1 = MyNode::from_addr("node#1")?;
     let node2 = MyNode::from_addr("node#2")?;
-    let nodeX = MyNode::from_addr("node#2")?;
+    let nodex = MyNode::from_addr("node#2")?;
     nm.start_node(node1)?;
     nm.start_node(node2)?;
-    let _ = nm.start_node(nodeX);
+    let _ = nm.start_node(nodex);
 
     nm.block_on_nodes();
 

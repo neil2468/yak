@@ -6,6 +6,5 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0"
 yak_core = { path = "../yak_core" }
-async-trait = "0.1"
 tokio = { version = "1", features = ["time"] }
 
