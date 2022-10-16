@@ -1,0 +1,10 @@
+[package]
+name = "shared_registry"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+tokio = { version = "1", features = ["macros" , "rt-multi-thread", "time", "sync"] }
+rand = "0.8.4"
