@@ -1,0 +1,10 @@
+[package]
+name = "mng_starts_node_static_dispatch"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+tokio = { version = "1", features = ["time", "macros" , "rt-multi-thread"] }
+async-trait = "0.1"

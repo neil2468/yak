@@ -26,12 +26,10 @@ async fn main() {
 
     while !j.iter().all(JoinHandle::is_finished) {
         println!("Waiting...");
-
         {
             let tmp = arc.read().await;
             println!("len = {}", tmp.data.len());
         }
-
         sleep(Duration::from_millis(50)).await;
     }
 
