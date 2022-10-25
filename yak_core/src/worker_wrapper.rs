@@ -1,21 +1,31 @@
-use crate::Worker;
+use tokio::sync::mpsc::Receiver;
+
+use crate::{Address, Message, Worker};
 
 pub(crate) struct WorkerWrapper {
-    core: Box<dyn Worker>,
+    addr: Address,
+    worker: Box<dyn Worker>,
+    rx: Receiver<Message>,
 }
 
 impl WorkerWrapper {
-    pub(crate) fn new(core: Box<dyn Worker>) -> Self {
-        Self { core }
+    pub(crate) fn new(addr: Address, worker: Box<dyn Worker>, rx: Receiver<Message>) -> Self {
+        Self { addr, worker, rx }
     }
 
     pub(crate) async fn run(&mut self) {
         println!("Worker::run()");
 
         // TODO: Dummy implementataion
-        for _ in 0..10 {
-            self.core.run().await;
-            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
+        while let Some(msg) = self.rx.recv().await {
+            println!("{}: rx'ed {}", self.addr, msg);
+            match msg {
+                Message::Shutdown => {
+                    self.rx.close();
+                }
+                msg => self.worker.run(&self.addr, &msg).await,
+            }
         }
 
         println!("Worker::run() done");

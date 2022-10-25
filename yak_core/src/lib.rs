@@ -8,3 +8,6 @@ mod worker_wrapper;
 
 mod manager;
 pub use manager::*;
+
+mod message;
+pub use message::*;
