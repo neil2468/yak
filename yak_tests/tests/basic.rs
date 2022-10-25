@@ -1,46 +1,35 @@
 use anyhow::Result;
-use tokio::time::{sleep, Duration};
-use yak_core::{async_trait::async_trait, Node, NodeAddress, NodeAddressError, NodeManager};
-
-struct MyNode {
-    addr: NodeAddress,
-}
-
-impl MyNode {
-    fn from_addr<T: TryInto<NodeAddress, Error = NodeAddressError>>(
-        addr: T,
-    ) -> Result<Self, NodeAddressError> {
-        let tmp: NodeAddress = addr.try_into()?;
-        Ok(Self { addr: tmp })
-    }
-}
-
-#[async_trait]
-impl Node for MyNode {
-    fn address(&self) -> &NodeAddress {
-        &self.addr
-    }
-
-    async fn main_loop(&self) {
-        for i in 0..10 {
-            println!("{}, addr = {}", i, self.addr);
-            sleep(Duration::from_millis(250)).await;
-        }
-    }
-}
+use async_trait::async_trait;
+use yak_core::{Address, Manager, Worker};
 
 #[test]
 fn basic() -> Result<()> {
-    let mut nm = NodeManager::new();
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(basic_impl())
+}
 
-    let node1 = MyNode::from_addr("node#1")?;
-    let node2 = MyNode::from_addr("node#2")?;
-    let nodex = MyNode::from_addr("node#2")?;
-    nm.start_node(node1)?;
-    nm.start_node(node2)?;
-    let _ = nm.start_node(nodex);
+async fn basic_impl() -> Result<()> {
+    let mut m = Manager::startup();
 
-    nm.block_on_nodes();
+    // let addr = Address::try_from("123")?;
+
+    let w = Inlet {};
+
+    m.spawn_worker(Box::new(w)).await;
+    m.wait_on_workers().await;
+    m.shutdown().await;
 
     Ok(())
+}
+
+struct Inlet;
+
+#[async_trait]
+impl Worker for Inlet {
+    async fn run(&mut self) {
+        println!("Inlet::run()");
+    }
 }
